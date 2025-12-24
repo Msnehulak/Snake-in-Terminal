@@ -21,6 +21,13 @@ settings = {
 }
 
 SYMBOLS = {
+    "Texts": {
+        "Score": "Score:",
+        "State": "State:",
+        "Position": "Position:",
+        "lost": "lost",
+        "running": "run"
+    },
     "Border": {
         "TL_corner": "╔",
         "TR_corner": "╗",
@@ -41,7 +48,7 @@ SYMBOLS = {
     "Mark":  "❌"
     #        "▷ "
 }
-
+TEXTS = SYMBOLS["Texts"]
 GRID_SIZE_ROW = settings["GRID_SIZE_ROW"]
 GRID_SIZE_COL = settings["GRID_SIZE_COL"]
 FPS = settings["FPS"]
@@ -49,6 +56,9 @@ KEYS = settings["KEYS"]
 KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 
 last_press = "d"
+last_move = ""
+game_state = TEXTS["running"]
+
 snake_row = settings["start_row"]
 snake_col = settings["start_col"]
 
@@ -97,34 +107,64 @@ def board_print():
 
         print(BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"])
 
-    # Spodní rám
+    # bottom print
     print(BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"])
-    print(f"Score: {score} | Pozice: [{snake_row},{snake_col}]")
-    print(f"Tail: {tail_pos}")
+    print(f"{TEXTS['Score']} {score} | {TEXTS['State']} {game_state}") # | Pozice: [{snake_row},{snake_col}]
+    # print(f"Tail: {tail_pos}")
 
 def logic_loop():
-    global snake_col, snake_row, apple_row, apple_col, score
+    global snake_col, snake_row, apple_row, apple_col, score, last_move, last_press, game_state
 
     # Snake move
     if last_press == KEYS["UP"]:
-        snake_row -= 1
+        if last_move != KEYS["DOWN"]:
+            snake_row -= 1
+            last_move = last_press
+            
+        else:
+            snake_row += 1
+            last_press = last_move
+
     elif last_press == KEYS["DOWN"]:
-        snake_row += 1
+        if last_move != KEYS["UP"]:
+            snake_row += 1
+            last_move = last_press
+        else:
+            snake_row -= 1
+            last_press = last_move
+
     elif last_press == KEYS["LEFT"]:
-        snake_col -= 1
+        if last_move != KEYS["RIGHT"]:
+            snake_col -= 1
+            last_move = last_press
+        else:
+            snake_col += 1
+            last_press = last_move
+            
     elif last_press == KEYS["RIGHT"]:
-        snake_col += 1
-    
+        if last_move != KEYS["LEFT"]:
+            snake_col += 1
+            last_move = last_press
+        else:
+            snake_col -= 1
+            last_press = last_move
+
     # wall colide
     if snake_row < 0:
         snake_row = GRID_SIZE_ROW - 1
+        game_state = TEXTS["lost"]
+
     elif snake_row >= GRID_SIZE_ROW:
         snake_row = 0
+        game_state = TEXTS["lost"]
         
-    if snake_col < 0:
+    elif snake_col < 0:
         snake_col = GRID_SIZE_COL - 1
+        game_state = TEXTS["lost"]
+
     elif snake_col >= GRID_SIZE_COL:
         snake_col = 0
+        game_state = TEXTS["lost"]
 
     # apple colide + tail count
     if snake_row == apple_row and snake_col == apple_col:
