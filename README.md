@@ -1,6 +1,6 @@
 # 🐍 Snake in Terminal 
 
-This is my Snake in Terminal. I used Python to create this old and beautiful game.
+This is my Snake in Terminal. I used Python to create this old and beautiful game in terminal.
 
 ## 🛠 How to run it
 
