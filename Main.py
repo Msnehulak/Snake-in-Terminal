@@ -187,8 +187,8 @@ def game_loop():
 
     while True:
         print("\033[H", end="")
-        board_print()
         logic_loop()
+        board_print()
         time.sleep(1/FPS)
 
 def input_loop():
