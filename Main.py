@@ -45,9 +45,9 @@ SYMBOLS = {
     },
     "Snake": {
         "T_head": "△ ",
-        "R_head": " ▷",
+        "R_head": "▷ ",
         "B_head": "▽ ",
-        "L_head": "◁ "
+        "L_head": " ◁"
     },
     "Tail" : "∎ ",
     "Apple": "🍎",
@@ -62,67 +62,87 @@ FPS = settings["FPS"]
 KEYS = settings["KEYS"]
 KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 
+# game
 last_press = "d"
 last_move = ""
 game_state = TEXTS["running"]
 
+# snake
 snake_row = settings["start_row"]
 snake_col = settings["start_col"]
+snake_before = [snake_row, snake_col]
 
-tail_pos = [[-1,-1]]
+tail_pos = []
 
+# apple
 apple_row = random.randint(0, GRID_SIZE_ROW - 1)
 apple_col = random.randint(0, GRID_SIZE_COL - 1)
 
+# mark
 mark_row = -1
 mark_col = -1
 
 score = 0
 
 def get_snake_symbol():
-    if last_press == KEYS["UP"]:
-        return SYMBOLS["Snake"]["T_head"]
-    elif last_press == KEYS["DOWN"]:
-        return SYMBOLS["Snake"]["B_head"]
-    elif last_press == KEYS["LEFT"]:
-        return SYMBOLS["Snake"]["L_head"]
-    elif last_press == KEYS["RIGHT"]:
-        return SYMBOLS["Snake"]["R_head"]
+    if last_press == KEYS["UP"]: return SYMBOLS["Snake"]["T_head"]
+    elif last_press == KEYS["DOWN"]: return SYMBOLS["Snake"]["B_head"]
+    elif last_press == KEYS["LEFT"]: return SYMBOLS["Snake"]["L_head"]
+    elif last_press == KEYS["RIGHT"]: return SYMBOLS["Snake"]["R_head"]
     return SYMBOLS["Snake"]["R_head"]
 
 def board_print():
     BORDER = SYMBOLS["Border"]
     
-    # top print
-    print(BORDER["TL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["TR_corner"])
+    full_print = ""
 
+    # top print
+    full_print += BORDER["TL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["TR_corner"] + "\n"
+
+    # middle print
     for r in range(GRID_SIZE_ROW):
         row_string = ""
         for c in range(GRID_SIZE_COL):
-            if r == snake_row and c == snake_col:
+            if False:
+                pass
+            elif r == snake_row and c == snake_col:
                 pix = get_snake_symbol()
+            elif [r,c] in tail_pos:
+                pix = SYMBOLS["Tail"]
             elif r == apple_row and c == apple_col:
                 pix = SYMBOLS["Apple"]
             elif r == mark_row and c == mark_col:
                 pix = SYMBOLS["Mark"]
-            elif [r,c] in tail_pos:
-                pix = SYMBOLS["Tail"]
             else:
                 pix = SYMBOLS["Empty"]
             
             row_string += pix
 
-        print(BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"])
+        full_print += BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"] + "\n"
 
     # bottom print
-    print(BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"])
-    print(f"{TEXTS['Score']} {score} | {TEXTS['State']} {game_state}") # | Pozice: [{snake_row},{snake_col}]
+    full_print += BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"] + "\n"
+    full_print += f"{TEXTS['Score']} {score} | {TEXTS['State']} {game_state}" + "\n" # | Pozice: [{snake_row},{snake_col}]
     # print(f"Tail: {tail_pos}")
+
+    print(full_print)
+
+def random_apple():
+    global apple_row, apple_col
+
+    while True:
+        apple_row = random.randint(0, GRID_SIZE_ROW - 1)
+        apple_col = random.randint(0, GRID_SIZE_COL - 1)
+
+        if [apple_row, apple_col] in tail_pos and [apple_row, apple_col] != [snake_row, snake_col]:
+            continue
+        else:
+            return apple_row, apple_col
 
 def logic_loop():
     global snake_col, snake_row, apple_row, apple_col, score, last_move, last_press, game_state
 
-    if game_state == TEXTS["lost"]: return
+    snake_before = [snake_row, snake_col]
 
     # Snake move
     if last_press == KEYS["UP"]:
@@ -178,16 +198,14 @@ def logic_loop():
     # apple colide + tail count
     if snake_row == apple_row and snake_col == apple_col:
         # random apple
-        apple_row = random.randint(0, GRID_SIZE_ROW - 1)
-        apple_col = random.randint(0, GRID_SIZE_COL - 1)
+        random_apple()
         score += 1
-        tail_pos.append([snake_row, snake_col])
+        tail_pos.append(snake_before)
     else:
         # remove tail
-        tail_pos.pop(0)
-        tail_pos.append([snake_row, snake_col])
-    
-
+        if len(tail_pos) > 0:
+            tail_pos.append(snake_before)
+            tail_pos.pop(0)
 
 def game_loop():
     os.system("")
