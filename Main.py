@@ -1,11 +1,18 @@
 # Snake in terminal
 import time
 import threading
-import pynput
 import os
 import random
+import sys
 
-# Definice nastavení
+test_mode = "--test-mode" in sys.argv
+
+if not test_mode:
+    import pynput
+else:
+    print("running in test mode - pynput skip.")
+
+# Definie settings
 settings = {
     "GRID_SIZE_ROW": 15,
     "GRID_SIZE_COL": 17, 
@@ -115,6 +122,8 @@ def board_print():
 def logic_loop():
     global snake_col, snake_row, apple_row, apple_col, score, last_move, last_press, game_state
 
+    if game_state == TEXTS["lost"]: return
+
     # Snake move
     if last_press == KEYS["UP"]:
         if last_move != KEYS["DOWN"]:
@@ -184,6 +193,12 @@ def game_loop():
     os.system("")
     print("\033[2J", end="")
 
+    if test_mode:
+        logic_loop()
+        board_print()
+        print("Test Run ok.")
+        return
+
     while True:
         print("\033[H", end="")
         logic_loop()
@@ -192,6 +207,8 @@ def game_loop():
 
 def input_loop():
     global last_press
+    if test_mode: return
+
     with pynput.keyboard.Events() as events:
         for event in events:
             if isinstance(event, pynput.keyboard.Events.Press):
