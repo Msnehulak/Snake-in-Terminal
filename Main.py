@@ -45,9 +45,9 @@ SYMBOLS = {
     },
     "Snake": {
         "T_head": "△ ",
-        "R_head": "▷ ",
+        "R_head": " ▷",
         "B_head": "▽ ",
-        "L_head": " ◁"
+        "L_head": "◁ "
     },
     "Tail" : "∎ ",
     "Apple": "🍎",
@@ -66,6 +66,8 @@ KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 last_press = "d"
 last_move = ""
 game_state = TEXTS["running"]
+end_time = 0
+elapsed_time = 0
 
 # snake
 snake_row = settings["start_row"]
@@ -127,6 +129,32 @@ def board_print():
 
     print(full_print)
 
+def end_screen_print():
+    BORDER = SYMBOLS["Border"]
+    
+    full_print = ""
+
+    # top print
+    full_print += BORDER["TL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["TR_corner"] + "\n"
+
+    # middle print
+    for r in range(GRID_SIZE_ROW):
+        if False:
+            pass
+        if r == 0:
+            out = f"Score: {score}"
+            row_string = f"Score: {score}" + " " * (GRID_SIZE_COL*2 - len(out))
+        else:
+            row_string = "  "*GRID_SIZE_COL
+
+
+        full_print += BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"] + "\n"
+
+    # bottom print
+    full_print += BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"] + "\n"
+
+    print(full_print)
+
 def random_apple():
     global apple_row, apple_col
 
@@ -178,8 +206,14 @@ def logic_loop():
             snake_col -= 1
             last_press = last_move
 
+    # snake tail colide
+    if [snake_row, snake_col] in tail_pos:
+        game_state = TEXTS["lost"]
+
     # wall colide
-    if snake_row < 0:
+    if False:
+        pass
+    elif snake_row < 0:
         snake_row = GRID_SIZE_ROW - 1
         game_state = TEXTS["lost"]
 
@@ -217,11 +251,20 @@ def game_loop():
         print("Test Run ok.")
         return
 
-    while True:
+    while game_state == TEXTS["running"]:
         print("\033[H", end="")
+        start_time = time.time()
         logic_loop()
         board_print()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
         time.sleep(1/FPS)
+
+    if not test_mode:
+        print("\033[H", end="")
+        logic_loop()
+        end_screen_print()
+        input("Press enter to exit")
 
 def input_loop():
     global last_press
