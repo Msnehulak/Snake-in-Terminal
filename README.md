@@ -6,9 +6,9 @@ This is my Snake in Terminal. I used Python to create this old and beautiful gam
 
 1. **Requirements:**
    - Have **Python** installed.
-   - Install the **pynput** library:
+   - Install librarys from **requirements.txt**:
      ```bash
-     pip install pynput
+     pip install -r requirements.txt
      ```
 
 2. **Run the game:**
