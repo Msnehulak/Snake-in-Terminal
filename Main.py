@@ -180,7 +180,6 @@ def logic_loop():
     
 
 
-
 def game_loop():
     os.system("")
     print("\033[2J", end="")

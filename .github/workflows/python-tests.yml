@@ -1,0 +1,29 @@
+name: Python Package Check
+
+on: [push, pull_request] # Spustí se při každém nahrání kódu
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Tady definuješ verze, které chceš kontrolovat
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4 # Robot si stáhne tvůj kód
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Test run
+      run: |
+        # Tady robot zkusí spustit tvůj skript (nebo testy)
+        python snake.py --test-mode
