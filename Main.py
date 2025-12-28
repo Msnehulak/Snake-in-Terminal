@@ -10,7 +10,7 @@ test_mode = "--test-mode" in sys.argv
 if not test_mode:
     import pynput
 else:
-    print("running in test mode - pynput skip.")
+    print("Running in test mode - pynput skip.")
 
 # Definie settings
 settings = {
@@ -29,11 +29,15 @@ settings = {
 
 SYMBOLS = {
     "Texts": {
+        "Main_text": "Snake in terminal",
+        "End_text": "you LOST",
+        "Start_press": "Press Enter to start",
+        "Stop_press": "Press Enter to start",
         "Score": "Score:",
         "State": "State:",
         "Position": "Position:",
-        "lost": "lost",
-        "running": "run"
+        "Lost": "lost",
+        "Running": "run",
     },
     "Border": {
         "TL_corner": "╔",
@@ -65,7 +69,7 @@ KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 # game
 last_press = "d"
 last_move = ""
-game_state = TEXTS["running"]
+game_state = TEXTS["Running"]
 end_time = 0
 elapsed_time = 0
 
@@ -92,6 +96,33 @@ def get_snake_symbol():
     elif last_press == KEYS["LEFT"]: return SYMBOLS["Snake"]["L_head"]
     elif last_press == KEYS["RIGHT"]: return SYMBOLS["Snake"]["R_head"]
     return SYMBOLS["Snake"]["R_head"]
+
+def menu_print():
+    BORDER = SYMBOLS["Border"]
+    
+    full_print = ""
+
+    # top print
+    full_print += BORDER["TL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["TR_corner"] + "\n"
+
+    # midle
+    for r in range(GRID_SIZE_ROW):
+        if False:
+            pass
+        elif r == 1:
+            text = TEXTS["Main_text"]
+            out = " " * int(GRID_SIZE_COL - len(text)/2) + str(text)
+        else:
+            out = " "
+
+        row_string = out + " " * (GRID_SIZE_COL*2 - len(out))
+
+        full_print += BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"] + "\n"
+
+    # bottom print
+    full_print += BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"] + "\n"
+
+    print(full_print)
 
 def board_print():
     BORDER = SYMBOLS["Border"]
@@ -125,7 +156,7 @@ def board_print():
     # bottom print
     full_print += BORDER["BL_corner"] + BORDER["Horizontal_line"] * (GRID_SIZE_COL * 2) + BORDER["BR_corner"] + "\n"
     full_print += f"{TEXTS['Score']} {score} | {TEXTS['State']} {game_state}" + "\n" # | Pozice: [{snake_row},{snake_col}]
-    # print(f"Tail: {tail_pos}")
+    full_print += f"Tail: {tail_pos}" + "\n"
 
     print(full_print)
 
@@ -141,11 +172,15 @@ def end_screen_print():
     for r in range(GRID_SIZE_ROW):
         if False:
             pass
-        if r == 0:
+        elif r == 1:
+            text = TEXTS["End_text"]
+            out =  " " * int(GRID_SIZE_COL - len(text)/2) + str(text)
+        elif r == 2:
             out = f"Score: {score}"
-            row_string = f"Score: {score}" + " " * (GRID_SIZE_COL*2 - len(out))
         else:
-            row_string = "  "*GRID_SIZE_COL
+            out = " "
+        
+        row_string = str(out) + " " * (GRID_SIZE_COL*2 - len(out))
 
 
         full_print += BORDER["Vertical_line"] + row_string + BORDER["Vertical_line"] + "\n"
@@ -163,7 +198,7 @@ def random_apple():
         apple_col = random.randint(0, GRID_SIZE_COL - 1)
 
         if [apple_row, apple_col] in tail_pos and [apple_row, apple_col] != [snake_row, snake_col]:
-            continue
+            print("problem")
         else:
             return apple_row, apple_col
 
@@ -208,26 +243,26 @@ def logic_loop():
 
     # snake tail colide
     if [snake_row, snake_col] in tail_pos:
-        game_state = TEXTS["lost"]
+        game_state = TEXTS["Lost"]
 
     # wall colide
     if False:
         pass
     elif snake_row < 0:
-        snake_row = GRID_SIZE_ROW - 1
-        game_state = TEXTS["lost"]
+        snake_row = 0
+        game_state = TEXTS["Lost"]
 
     elif snake_row >= GRID_SIZE_ROW:
-        snake_row = 0
-        game_state = TEXTS["lost"]
+        snake_row = GRID_SIZE_ROW - 1
+        game_state = TEXTS["Lost"]
         
     elif snake_col < 0:
-        snake_col = GRID_SIZE_COL - 1
-        game_state = TEXTS["lost"]
+        snake_col = 0
+        game_state = TEXTS["Lost"]
 
     elif snake_col >= GRID_SIZE_COL:
-        snake_col = 0
-        game_state = TEXTS["lost"]
+        snake_col = GRID_SIZE_COL - 1
+        game_state = TEXTS["Lost"]
 
     # apple colide + tail count
     if snake_row == apple_row and snake_col == apple_col:
@@ -241,29 +276,44 @@ def logic_loop():
             tail_pos.append(snake_before)
             tail_pos.pop(0)
 
+def menu_logic():
+    menu_print()
+    input(TEXTS["Start_press"])
+
+
 def game_loop():
     os.system("")
     print("\033[2J", end="")
 
     if test_mode:
+        menu_print()
         logic_loop()
         board_print()
+        end_screen_print()
         print("Test Run ok.")
         return
 
-    while game_state == TEXTS["running"]:
+    else:
         print("\033[H", end="")
-        start_time = time.time()
         logic_loop()
-        board_print()
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        time.sleep(1/FPS)
+        menu_logic()
+        time.sleep(1)
 
-    if not test_mode:
+        while game_state == TEXTS["Running"]:
+            print("\033[H", end="")
+            start_time = time.time()
+            logic_loop()
+            board_print()
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            time.sleep(1/FPS)
+        
+        time.sleep(1)
+
         print("\033[H", end="")
         logic_loop()
         end_screen_print()
+        time.sleep(1)
         input("Press enter to exit")
 
 def input_loop():
