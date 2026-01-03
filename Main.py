@@ -4,6 +4,9 @@ import threading
 import os
 import random
 import sys
+from pathlib import Path
+import json
+
 
 test_mode = "--test-mode" in sys.argv
 
@@ -14,8 +17,8 @@ else:
 
 # Definie settings
 settings = {
-    "GRID_SIZE_ROW": 10,
-    "GRID_SIZE_COL": 5, 
+    "GRID_SIZE_ROW": 15,
+    "GRID_SIZE_COL": 17, 
     "Fps": 7,
     "Keys": {
         "UP": "w",
@@ -59,36 +62,7 @@ SYMBOLS = {
     "Mark":  "❌"
     #        "▷ "
 }
-TEXTS = SYMBOLS["Texts"]
-GRID_SIZE_ROW = settings["GRID_SIZE_ROW"]
-GRID_SIZE_COL = settings["GRID_SIZE_COL"]
-FPS = settings["Fps"]
-KEYS = settings["Keys"]
-KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 
-# game
-last_press = "d"
-last_move = ""
-game_state = TEXTS["Running"]
-end_time = 0
-elapsed_time = 0
-
-# snake
-snake_row = settings["Start_row"]
-snake_col = settings["Start_col"]
-snake_before = [snake_row, snake_col]
-
-tail_pos = []
-
-# apple
-apple_row = random.randint(0, GRID_SIZE_ROW - 1)
-apple_col = random.randint(0, GRID_SIZE_COL - 1)
-
-# mark
-mark_row = -1
-mark_col = -1
-
-score = 0
 
 def value_control():
     if settings["GRID_SIZE_COL"] <= settings["Start_col"]:
@@ -340,11 +314,60 @@ def input_loop():
                 except AttributeError:
                     pass
 
+
 if __name__ == "__main__":
-    input_thread = threading.Thread(target=input_loop, daemon=True)
-    input_thread.start()
-    
-    try:
-        game_loop()
-    except KeyboardInterrupt:
-        print("\nHra ukončena.")
+    TEXTS = SYMBOLS["Texts"]
+    GRID_SIZE_ROW = settings["GRID_SIZE_ROW"]
+    GRID_SIZE_COL = settings["GRID_SIZE_COL"]
+    FPS = settings["Fps"]
+    KEYS = settings["Keys"]
+    KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
+
+    # game
+    last_press = "d"
+    last_move = ""
+    game_state = TEXTS["Running"]
+    end_time = 0
+    elapsed_time = 0
+
+    # snake
+    snake_row = settings["Start_row"]
+    snake_col = settings["Start_col"]
+    snake_before = [snake_row, snake_col]
+
+    tail_pos = []
+
+    # apple
+    apple_row = random.randint(0, GRID_SIZE_ROW - 1)
+    apple_col = random.randint(0, GRID_SIZE_COL - 1)
+
+    # mark
+    mark_row = -1
+    mark_col = -1
+
+    # score
+    score = 0
+
+    # Mods load
+    if False:
+        valid_files = []
+
+        current_dir = Path(__file__).resolve().parent
+        mods_dir = current_dir / "mods"
+
+        if mods_dir.is_dir():
+            for file in mods_dir.glob("*.json"):
+                if file.stem.endswith(("_symb", "_set")):
+                    print(file.name)
+                    valid_files.append(file.name)
+
+        print(valid_files)
+
+    if True:
+        input_thread = threading.Thread(target=input_loop, daemon=True)
+        input_thread.start()
+
+        try:
+            game_loop()
+        except KeyboardInterrupt:
+            print("\nHra ukončena.")

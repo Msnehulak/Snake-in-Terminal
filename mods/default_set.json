@@ -1,0 +1,13 @@
+{
+    "GRID_SIZE_ROW": 10,
+    "GRID_SIZE_COL": 5, 
+    "Fps": 7,
+    "Keys": {
+        "UP": "w",
+        "DOWN": "s",
+        "LEFT": "a",
+        "RIGHT": "d"
+    },
+    "Start_row": 5,
+    "Start_col": 5
+}

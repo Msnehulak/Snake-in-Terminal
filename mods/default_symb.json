@@ -1,0 +1,31 @@
+{
+    "Texts": {
+        "Main_text": "Snake in terminal",
+        "End_text": "you LOST",
+        "Start_press": "Press Enter to start",
+        "Stop_press": "Press Enter to start",
+        "Score": "Score:",
+        "State": "State:",
+        "Position": "Position:",
+        "Lost": "lost",
+        "Running": "run"
+    },
+    "Border": {
+        "TL_corner": "╔",
+        "TR_corner": "╗",
+        "BL_corner": "╚",
+        "BR_corner": "╝",
+        "Horizontal_line": "═",
+        "Vertical_line": "║"
+    },
+    "Snake": {
+        "T_head": "△ ",
+        "R_head": " ▷",
+        "B_head": "▽ ",
+        "L_head": "◁ "
+    },
+    "Tail" : "∎ ",
+    "Apple": "🍎",
+    "Empty": "⠀⠀",
+    "Mark":  "❌"
+}
