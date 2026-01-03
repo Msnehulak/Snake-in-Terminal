@@ -14,17 +14,17 @@ else:
 
 # Definie settings
 settings = {
-    "GRID_SIZE_ROW": 15,
-    "GRID_SIZE_COL": 17, 
-    "FPS": 7,
-    "KEYS": {
+    "GRID_SIZE_ROW": 10,
+    "GRID_SIZE_COL": 5, 
+    "Fps": 7,
+    "Keys": {
         "UP": "w",
         "DOWN": "s",
         "LEFT": "a",
         "RIGHT": "d"
     },
-    "start_row": 5,
-    "start_col": 5
+    "Start_row": 5,
+    "Start_col": 5
 }
 
 SYMBOLS = {
@@ -62,8 +62,8 @@ SYMBOLS = {
 TEXTS = SYMBOLS["Texts"]
 GRID_SIZE_ROW = settings["GRID_SIZE_ROW"]
 GRID_SIZE_COL = settings["GRID_SIZE_COL"]
-FPS = settings["FPS"]
-KEYS = settings["KEYS"]
+FPS = settings["Fps"]
+KEYS = settings["Keys"]
 KEYS_LIST = [KEYS["UP"], KEYS["DOWN"], KEYS["LEFT"], KEYS["RIGHT"]]
 
 # game
@@ -74,8 +74,8 @@ end_time = 0
 elapsed_time = 0
 
 # snake
-snake_row = settings["start_row"]
-snake_col = settings["start_col"]
+snake_row = settings["Start_row"]
+snake_col = settings["Start_col"]
 snake_before = [snake_row, snake_col]
 
 tail_pos = []
@@ -89,6 +89,15 @@ mark_row = -1
 mark_col = -1
 
 score = 0
+
+def value_control():
+    if settings["GRID_SIZE_COL"] <= settings["Start_col"]:
+        print("GRID_SIZE_COL and Start_col problem")
+    elif settings["GRID_SIZE_ROW"] <= settings["Start_row"]:
+        print("GRID_SIZE_ROW and Start_row problem")
+    else:
+        return True
+    return False
 
 def get_snake_symbol():
     if last_press == KEYS["UP"]: return SYMBOLS["Snake"]["T_head"]
@@ -280,7 +289,6 @@ def menu_logic():
     menu_print()
     input(TEXTS["Start_press"])
 
-
 def game_loop():
     os.system("")
     print("\033[2J", end="")
@@ -293,21 +301,22 @@ def game_loop():
         print("Test Run ok.")
         return
 
-    else:
+    elif value_control():
         print("\033[H", end="")
         logic_loop()
         menu_logic()
+
+        print("\033[H", end="")
+        board_print()
         time.sleep(1)
 
         while game_state == TEXTS["Running"]:
-            print("\033[H", end="")
-            start_time = time.time()
             logic_loop()
+           
+            print("\033[H", end="")
             board_print()
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            time.sleep(1/FPS)
-        
+
+            time.sleep(1 / FPS)
         time.sleep(1)
 
         print("\033[H", end="")
