@@ -1,0 +1,12 @@
+[package]
+name = "snake-in-terminal"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.27"
+rand = "0.8"
+
+[[bin]]
+name = "snake"
+path = "src/main.rs"
